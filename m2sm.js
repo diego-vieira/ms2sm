@@ -72,7 +72,7 @@ function __SHOW_TABLES__(err, tables) {
   }
 
   for(var i = 0, j = tables.length; i < j; i++) {
-    var currentTable = tables[i]['Tables_in_'+m2sm.database];
+    var currentTable = tables[i]['Tables_in_'+m2sm.database.toLowerCase()];
     (function(table) {
       console.log(table);
       connection.query("DESCRIBE `" + table + "`;", function(err, schema) {
