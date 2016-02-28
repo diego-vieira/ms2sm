@@ -43,6 +43,12 @@ function writeModel(schema, table) {
     return;
   }
 
+  fs.rmdir('./models', (err) => {
+  });
+
+  fs.mkdir('./models', 777, (err) => {
+  });
+
   var sailsModel = m2smlib.convertSchema2SailsModel(schema);
 
   sailsModel.tableName = table;
@@ -50,7 +56,7 @@ function writeModel(schema, table) {
 
   var modelPrefix = "/**\n* "+camelTableName+".js\n*\n* @description :: TODO: Write a short summary of how this model works and what it represents here.\n* @docs        :: http://sailsjs.org/#!documentation/models\n*/\n\nmodule.exports = ";
 
-  fs.writeFile(camelTableName + '.js', //filename
+  fs.writeFile('./models/' + camelTableName + '.js', //filename
     modelPrefix+JSON.stringify(sailsModel, undefined, 2), //text
     function (err) {
       if (err)
@@ -72,11 +78,11 @@ function __SHOW_TABLES__(err, tables) {
   }
 
   for(var i = 0, j = tables.length; i < j; i++) {
-    var currentTable = tables[i]['Tables_in_'+m2sm.database];
+    var currentTable = tables[i]['Tables_in_'+m2sm.database.toLowerCase()];
     (function(table) {
       console.log(table);
       connection.query("DESCRIBE `" + table + "`;", function(err, schema) {
-        writeModel(schema, table);
+        writeModel(schema, table, m2sm.database);
       });
     })(currentTable);
   }
