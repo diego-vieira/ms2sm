@@ -52,7 +52,7 @@ function writeModel(schema, table) {
   var modelPrefix = "/**\n* "+camelTableName+".js\n*\n* @description :: TODO: You might write a short summary of how this model works and what it represents here.\n* @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models\n*/\n\nmodule.exports = ";
 
   fs.writeFile('./models/' + camelTableName + '.js', //filename
-    modelPrefix+JSON.stringify(sailsModel, undefined, 2), //text
+    modelPrefix+JSON.stringify(sailsModel, undefined, 2).replace(/\"([^(\")"]+)\":/g,"$1:"), //text
     function (err) {
       if (err)
         throw err;
