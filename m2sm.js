@@ -4,6 +4,7 @@ var mysql = require("mysql");
 var fs = require("fs");
 var m2smlib = require("./lib/mysql2SailsModel.js");
 var inflection = require('inflection');
+var rmdir = require('rmdir');
 
 var m2sm = require("commander");
 
@@ -42,12 +43,6 @@ function writeModel(schema, table) {
     // This can cause problems if a view references invalid tables.
     return;
   }
-
-  fs.rmdir('./models', (err) => {
-  });
-
-  fs.mkdir('./models', 777, (err) => {
-  });
 
   var sailsModel = m2smlib.convertSchema2SailsModel(schema);
 
@@ -93,13 +88,18 @@ function __SHOW_TABLES__(err, tables) {
 connection.connect(function(err) {
   if(err) {
     console.error("connect to mysql failed ",err);
+    return;
   }
 
-  if(!m2sm.table) {
-    connection.query("SHOW TABLES;",__SHOW_TABLES__);
-  } else {
-    connection.query("DESCRIBE " + m2sm.table + ";", function(err, schema) {
-      writeModel(schema, m2sm.table);
-    });
-  }
+  rmdir('./models', (err) => {
+      fs.mkdir('./models', (err) => {
+          if(!m2sm.table) {
+            connection.query("SHOW TABLES;",__SHOW_TABLES__);
+          } else {
+            connection.query("DESCRIBE " + m2sm.table + ";", function(err, schema) {
+              writeModel(schema, m2sm.table);
+            });
+          }
+      });
+  });
 });
